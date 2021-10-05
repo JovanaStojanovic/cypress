@@ -6,6 +6,7 @@ describe("register tests", () => {
 
     });
 
+    //POSITIVE TEST CASES
     //correct credentials 
 
     it("register with correct credentials", ()=>{
@@ -18,6 +19,29 @@ describe("register tests", () => {
         cy.get('button[type="submit"]').click();
     });
 
+    //first name consists of 2 parts
+    it("register with correct credentials", ()=>{
+        cy.get('input[id="first-name"]').clear().type("Ana-Maria");
+        cy.get('input[id="last-name"]').clear().type("Suarez");
+        cy.get('input[id="email"]').clear().type("amsuarez@gmail.com");
+        cy.get('input[id="password"]').clear().type("kisobran.22");
+        cy.get('input[id="password-confirmation"]').clear().type("kisobran.22");
+        cy.get('input[type="checkbox"]').check();
+        cy.get('button[type="submit"]').click();
+    });
+
+    //all info written in cyrillic alphabet
+    it("register with correct credentials", ()=>{
+        cy.get('input[id="first-name"]').clear().type("Јована");
+        cy.get('input[id="last-name"]').clear().type("Стојановић");
+        cy.get('input[id="email"]').clear().type("js140151@yahoo.com");
+        cy.get('input[id="password"]').clear().type("kisobran.22");
+        cy.get('input[id="password-confirmation"]').clear().type("kisobran.22");
+        cy.get('input[type="checkbox"]').check();
+        cy.get('button[type="submit"]').click();
+    });
+
+    //NEGATIVE TEST CASES
     //empty first name field
 
         it("register with empty first name field", ()=>{
@@ -53,16 +77,15 @@ describe("register tests", () => {
 
 
     //wrong email @ missing
-
-        it("register with email missing @", ()=>{
-                cy.get('input[id="first-name"]').clear().type("Jovana");
-                cy.get('input[id="last-name"]').clear().type("Stojanovic");
-                cy.get('input[id="email"]').clear().type("js1401514yahoo.com");
-                cy.get('input[id="password"]').clear().type("kisobran.22");
-                cy.get('input[id="password-confirmation"]').clear().type("kisobran.22");
-                cy.get('input[type="checkbox"]').check();
-                cy.get('button[type="submit"]').click();
-            });
+    it("register with email missing @", ()=>{
+            cy.get('input[id="first-name"]').clear().type("Jovana");
+            cy.get('input[id="last-name"]').clear().type("Stojanovic");
+            cy.get('input[id="email"]').clear().type("js1401514yahoo.com");
+            cy.get('input[id="password"]').clear().type("kisobran.22");
+            cy.get('input[id="password-confirmation"]').clear().type("kisobran.22");
+            cy.get('input[type="checkbox"]').check();
+            cy.get('button[type="submit"]').click();
+     });
     
     //wrong email . missing
     it("register with email missing .", ()=>{
@@ -122,13 +145,13 @@ describe("register tests", () => {
         cy.get('button[type="submit"]').click();
     });
 
-    //wrong password 7 letters and number
-    it("register with password that contains 7 letters and 1 number", ()=>{
+    //wrong password 6 letters and number
+    it("register with password that contains 6 letters and 1 number", ()=>{
         cy.get('input[id="first-name"]').clear().type("Jovana");
         cy.get('input[id="last-name"]').clear().type("Stojanovic");
         cy.get('input[id="email"]').clear().type("js140151416@yahoo.com");
-        cy.get('input[id="password"]').clear().type("tasnica1");
-        cy.get('input[id="password-confirmation"]').clear().type("tasnica1");
+        cy.get('input[id="password"]').clear().type("olovka1");
+        cy.get('input[id="password-confirmation"]').clear().type("olovka1");
         cy.get('input[type="checkbox"]').check();
         cy.get('button[type="submit"]').click();
     });
@@ -166,6 +189,16 @@ describe("register tests", () => {
         cy.get('button[type="submit"]').click();
     });
 
+    //long first name more than 255 characters
+    it("register with first name that has 256 characters", ()=>{
+        cy.get('input[id="first-name"]').clear().type("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus dictum turpis mattis mi vulputate eleifend. Integer non mattis diam. Aenean nec viverra nisl. Fusce nibh nisi, scelerisque sit amet enim sed, lacinia dictum urna. Quisque vel velit sit nulla.");
+        cy.get('input[id="last-name"]').clear().type("Stojanovic");
+        cy.get('input[id="email"]').clear().type("js11111@yahoo.com");
+        cy.get('input[id="password"]').clear().type("kisobran.22");
+        cy.get('input[id="password-confirmation"]').clear().type("kisobran.22");
+        cy.get('input[type="checkbox"]').check();
+        cy.get('button[type="submit"]').click();
+    });
 
 
     });
