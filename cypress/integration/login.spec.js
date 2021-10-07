@@ -1,4 +1,3 @@
-/// <reference types="Cypress" /> 
 
 describe("login tests", () => {
     it("visit gallery page", () => {
