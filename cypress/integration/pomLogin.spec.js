@@ -1,0 +1,41 @@
+///<reference types="Cypress" />
+
+import {loginPage} from './../page_objects/loginPage';
+const faker = require('faker');
+
+describe('POM login', ()=> {
+    let userData = {
+        randomEmail:faker.internet.email(),
+        randomPassword:faker.internet.password()
+    }
+    let correctEmail = 'petar@gmail.com';
+    let correctPassword= 'kisobran.22';
+    beforeEach('visit link', ()=>{
+        cy.visit('/');
+        cy.url().should('contains', 'https://gallery-app');
+    });
+
+    //POSITIVE TEST CASES
+//login with correct credentials
+    it("login with correct credentials",()=>{
+        loginPage.login(correctEmail, correctPassword);
+        loginPage.logoutButton.should('be.visible');
+    });
+
+     //logout
+     it("logout", ()=>{
+        loginPage.login(correctEmail, correctPassword);
+        loginPage.logoutButton.should('be.visible');
+        loginPage.logoutButton.click();
+        loginPage.logoutButton.should('not.exist');
+    });
+
+
+    //login with invalid data
+    it("login with invalid data", ()=>{
+        loginPage.login(correctEmail, userData.randomPassword);
+        cy.url().should('contains', 'https://gallery-app.vivifyideas.com/login');
+        cy.get('p[class="alert alert-danger"]').should('be.visible').and('contain', "Bad Credentials");
+        
+    });
+});
