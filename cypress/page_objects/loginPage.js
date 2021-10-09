@@ -16,7 +16,6 @@ export default class LoginPage {
         return cy.get('a[role="button "]');
     }
     login(email, password){
-        this.loginButton.click();
         this.emailInput.type(email);
         this.passwordInput.type(password);
         this.submitButton.click();
