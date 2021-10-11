@@ -64,6 +64,7 @@ export default class CreateGalleryPage {
         this.titleInput.clear().type(title);
         this.descriptionInput.clear().type(description);
         this.imageInput.clear().type(image);
+        this.addImageButton.click();
         this.secondImageInput.clear().type(secondImage);
         this.submitGalleryButton.click();
     }

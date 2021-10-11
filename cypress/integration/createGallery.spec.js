@@ -4,9 +4,15 @@ const Locators = require('../fixtures/Locators.json');
 import {loginPage} from './../page_objects/loginPage';
 import {createGalleryPage} from './../page_objects/createGalleryPage';
 const faker = require('faker');
-var randomstring = require("randomstring");
+const randomstring = require("randomstring");
 
 describe('POM create gallery', ()=> {
+    beforeEach('log into the app', () => {
+        cy.loginViaBackend("petar@gmail.com", "kisobran.22");
+        cy.visit('/create');
+        loginPage.logoutButton.should('be.visible');
+    }); 
+    
     let galleryData = {
         randomTitle:faker.name.title(),
         randomDescription:faker.lorem.sentence(),
@@ -28,16 +34,11 @@ describe('POM create gallery', ()=> {
     let maxTitle=randomstring.generate(255);
     let maxDescription=randomstring.generate(1000);
 
-    before('visit link', ()=>{
-        cy.visit('/');
-    });
+    
 
     //TEST CASES
 //user needs to be logged in in order to be able to see create gallery button
     it("create gallery option",()=>{
-        loginPage.loginButton.click();
-        loginPage.login(correctEmail, correctPassword);
-        cy.wait(3000);
         createGalleryPage.createGalleryButton.click();
         cy.url().should('contains', 'https://gallery-app.vivifyideas.com/create');
     });
@@ -66,7 +67,17 @@ describe('POM create gallery', ()=> {
 
 //title less than min of 2 characters
     it("title contains 1 character", ()=>{
+        cy.intercept(
+            "POST",
+            "https://gallery-api.vivifyideas.com/api/galleries",
+            (req)=>{}
+        ).as("invalidGallery");
+
+
         createGalleryPage.createGallery(shortTitle, galleryData.randomDescription, galleryData.randomUrlJpg);
+        cy.wait('@invalidGallery').then((interception)=> {
+            expect(interception.response.statusCode).eq(422);
+        })
         cy.url().should('contains', 'https://gallery-app.vivifyideas.com/create');
         cy.get('p[class="alert alert-danger"]').should('be.visible').and('contain', "The title must be at least 2 characters.");
     });
@@ -163,7 +174,7 @@ it("check button Down", ()=>{
 //all valid fields, title max 255 characters
 it("title 255 characters, all valid fields", ()=>{
     createGalleryPage.createGalleryButton.click();
-    loginPage.login(correctEmail,correctPassword);
+    // loginPage.login(correctEmail,correctPassword);
     cy.wait(3000);
     createGalleryPage.createGallery(maxTitle, galleryData.randomDescription, galleryData.randomUrlPng);
     cy.wait(3000);
@@ -174,7 +185,7 @@ it("title 255 characters, all valid fields", ()=>{
 //all valid fields, description max 1000 characters
 it("description 1000 characters, all valid fields", ()=>{
     createGalleryPage.createGalleryButton.click();
-    loginPage.login(correctEmail,correctPassword);
+    // loginPage.login(correctEmail,correctPassword);
     cy.wait(3000);
     createGalleryPage.createGallery(galleryData.randomTitle, maxDescription, galleryData.randomUrlPng);
     cy.wait(3000);
@@ -185,7 +196,7 @@ it("description 1000 characters, all valid fields", ()=>{
 //description field empty, title and image valid
 it("empty description field, all valid fields", ()=>{
     createGalleryPage.createGalleryButton.click();
-    loginPage.login(correctEmail,correctPassword);
+    // loginPage.login(correctEmail,correctPassword);
     cy.wait(3000);
     createGalleryPage.createGalleryNoDescription(galleryData.randomTitle, galleryData.randomUrlJpg);
     cy.wait(3000);
@@ -195,9 +206,9 @@ it("empty description field, all valid fields", ()=>{
 //check cancel button
 it("cancel button", ()=>{
     createGalleryPage.createGalleryButton.click();
-    loginPage.login(correctEmail,correctPassword);
+    // loginPage.login(correctEmail,correctPassword);
     cy.wait(3000);
-    createGalleryPage.createGalleryButton.click();
+    // createGalleryPage.createGalleryButton.click();
     createGalleryPage.cancelGalleryButton.click();
     cy.url().should('contain', 'https://gallery-app.vivifyideas.com/');
 });  
