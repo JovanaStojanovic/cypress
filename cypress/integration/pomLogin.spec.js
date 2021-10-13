@@ -18,18 +18,8 @@ describe('POM login', ()=> {
     //POSITIVE TEST CASES
 //login with correct credentials
     it("login with correct credentials",()=>{
-
-        cy.intercept(
-            "POST",
-            "https://gallery-api.vivifyideas.com/api/auth/login",
-            (req)=>{}
-        ).as("validLogin");
-
         loginPage.loginButton.click();
         loginPage.login(correctEmail, correctPassword);
-        cy.wait('@validLogin').then((interception)=>{
-            expect(interception.response.statusCode).eq(200);
-        })
         loginPage.logoutButton.should('be.visible');
     });
 
@@ -48,7 +38,7 @@ describe('POM login', ()=> {
         loginPage.loginButton.click();
         loginPage.login(correctEmail, userData.randomPassword);
         cy.url().should('contains', 'https://gallery-app.vivifyideas.com/login');
-        loginPage.errorMessage.should('be.visible').and('have.text', "Bad Credentials").and('have.css', 'color', 'rgb(114, 28, 36)');
+        cy.get('p[class="alert alert-danger"]').should('be.visible').and('contain', "Bad Credentials");
         
     });
 });

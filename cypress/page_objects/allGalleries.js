@@ -6,7 +6,7 @@ export default class AllGalleries {
         return cy.get('div[class="cell"]');
     }
     get heading(){
-        return cy.get('h1[class="title-style"]');
+        return cy.get('h1');
     }
 }
 

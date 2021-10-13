@@ -26,12 +26,27 @@
 Cypress.Commands.add("loginViaBackend", (email, password) =>{
     cy.request(
         'POST',
-        "https://gallery-api.vivifyideas.com/api/auth/login",
+        'https://gallery-api.vivifyideas.com/api/auth/login',
         {
             email: email,
             password:password
         }
     ).its("body").then((response)=>{
         window.localStorage.setItem("token", response.access_token);
-    });
+    })
+})
+
+//Why this custom command doesn't work?
+Cypress.Commands.add("createGalleryViaBackend", (title, description, url)=>{
+    cy.request(
+        'POST',
+        'https://gallery-api.vivifyideas.com/api/galleries',
+        {
+            title:title,
+            description: description,
+            url: url
+        }
+    ).its("body").then((response)=>{
+        expect(response.status).to.eq(200);
+    })
 })

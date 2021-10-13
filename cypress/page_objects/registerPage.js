@@ -23,15 +23,36 @@ export default class RegisterPage {
     get submitButton(){
         return cy.get('button[type="submit"]');
     }
+    get errorMessage(){
+        return cy.get('p[class="alert alert-danger"]');
+    }
+    get h1(){
+        return cy.get('h1');
+    }
     register(firstName, lastName, email, password, passwordConfirmation){
-        this.firstNameInput.type(firstName);
-        this.lastNameInput.type(lastName);
-        this.emailInput.type(email);
-        this.passwordInput.type(password);
-        this.passwordConfirmationInput.type(passwordConfirmation);
-        cy.wait(3000);
+        this.firstNameInput.clear().type(firstName);
+        this.lastNameInput.clear().type(lastName);
+        this.emailInput.clear().type(email);
+        this.passwordInput.clear().type(password);
+        this.passwordConfirmationInput.clear().type(passwordConfirmation);
         this.checkboxInput.check();
         this.submitButton.click();
 }
+    registerNoFirstName(lastName, email, password, passwordConfirmation){
+        this.lastNameInput.clear().type(lastName);
+        this.emailInput.clear().type(email);
+        this.passwordInput.clear().type(password);
+        this.passwordConfirmationInput.clear().type(passwordConfirmation);
+        this.checkboxInput.check();
+        this.submitButton.click();
+}
+    registerSkippedTerms(firstName, lastName, email, password, passwordConfirmation){
+        this.firstNameInput.clear().type(firstName);
+        this.lastNameInput.clear().type(lastName);
+        this.emailInput.clear().type(email);
+        this.passwordInput.clear().type(password);
+        this.passwordConfirmationInput.clear().type(passwordConfirmation);
+        this.submitButton.click();
+    }
 }
 export const registerPage = new RegisterPage();

@@ -1,4 +1,7 @@
 export default class CreateGalleryPage {
+    get h1Title(){
+        return cy.get('h1');
+    }
     get homeButton(){
         return cy.get('a[href="/"]').eq(1);
     }
@@ -17,55 +20,48 @@ export default class CreateGalleryPage {
     get descriptionInput(){
         return cy.get('input[id="description"]');
     }
-
+    get image(){
+        return cy.get('input[type="url"]');
+    }
     get imageInput(){
         return cy.get('input[type="url"]').eq(0);
     }
-
     get secondImageInput(){
         return cy.get('input[type="url"]').eq(1);
-    }
-
-    get thirdImageInput(){
-        return cy.get('input[type="url"]').eq(2);
     }
     get addImageButton(){
         return cy.get('button[type="button"]').eq(2);
     }
-    get buttonUp(){
-        return cy.get('button[class="input-buttons"]').eq(0);
+    get button(){
+        return cy.get('button[class="input-buttons"]');
     }
-    get buttonDown(){
-        return cy.get('button[class="input-buttons"]').eq(1);
+    get errorMessage(){
+        return cy.get('p[class="alert alert-danger"]');
     }
-    get lastButtonUp(){
-        return cy.get('button[class="input-buttons"]').eq(4);
-    }
-    get lastButtonDown(){
-        return cy.get('button[class="input-buttons"]').eq(5);
+    get titleCreatedGallery(){
+        return cy.get('a[class="box-title"]').eq(0);
     }
     createGallery(title, description, image){
         this.createGalleryButton.click();
         this.titleInput.clear().type(title);
         this.descriptionInput.clear().type(description);
-        this.imageInput.clear().type(image);
+        this.image.eq(0).clear().type(image);
         this.submitGalleryButton.click();
     }
-
     createGalleryNoUrl(title, description){
         this.createGalleryButton.click();
         this.titleInput.clear().type(title);
         this.descriptionInput.clear().type(description);
-        this.imageInput.clear();
+        this.image.eq(0).clear();
         this.submitGalleryButton.click();
     }
     createGalleryTwoUrls(title, description, image, secondImage){
         this.createGalleryButton.click();
         this.titleInput.clear().type(title);
         this.descriptionInput.clear().type(description);
-        this.imageInput.clear().type(image);
+        this.image.eq(0).clear().type(image);
         this.addImageButton.click();
-        this.secondImageInput.clear().type(secondImage);
+        this.image.eq(1).clear().type(secondImage);
         this.submitGalleryButton.click();
     }
 
@@ -73,9 +69,9 @@ export default class CreateGalleryPage {
         this.createGalleryButton.click();
         this.titleInput.clear().type(title);
         this.descriptionInput.clear().type(description);
-        this.imageInput.clear().type(image);
+        this.image.eq(0).clear().type(image);
         this.addImageButton.click();
-        this.secondImageInput.clear().type(secondImage);
+        this.image.eq(1).clear().type(secondImage);
         cy.wait(3000);
     }
     
@@ -83,7 +79,7 @@ export default class CreateGalleryPage {
         this.createGalleryButton.click();
         this.titleInput.clear().type(title);
         this.descriptionInput.clear();
-        this.imageInput.clear().type(image);
+        this.image.eq(0).clear().type(image);
         this.submitGalleryButton.click();
     }
 
