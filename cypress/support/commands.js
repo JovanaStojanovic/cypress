@@ -36,17 +36,29 @@ Cypress.Commands.add("loginViaBackend", (email, password) =>{
     })
 })
 
-//Why this custom command doesn't work?
-Cypress.Commands.add("createGalleryViaBackend", (title, description, url)=>{
+//Why this custom command doesn't work? 
+Cypress.Commands.add('createGalleryViaBackend', (title, description, imageUrl) => {
     cy.request(
-        'POST',
-        'https://gallery-api.vivifyideas.com/api/galleries',
         {
-            title:title,
+        method: 'POST',
+        url: 'https://gallery-api.vivifyideas.com/api/galleries',
+        body: {
+            title: title,
             description: description,
-            url: url
+            images: [imageUrl]
+        },
+        headers: {
+            authorization: 'Bearer ' + window.localStorage.getItem('token')
         }
-    ).its("body").then((response)=>{
-        expect(response.status).to.eq(200);
     })
+})
+
+Cypress.Commands.add('deleteGalleryViaBackend', (id)=>{
+    cy.request({
+        method: 'DELETE',
+        url: `https://gallery-api.vivifyideas.com/api/galleries/${id}`,
+        headers:{
+            authorization: 'Bearer ' + window.localStorage.getItem('token'),
+        },
+    });
 })

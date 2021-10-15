@@ -29,12 +29,16 @@ export default class RegisterPage {
     get h1(){
         return cy.get('h1');
     }
+
+    getInputField(id){
+        return cy.get(`#${id}`);
+    }
     register(firstName, lastName, email, password, passwordConfirmation){
-        this.firstNameInput.clear().type(firstName);
-        this.lastNameInput.clear().type(lastName);
-        this.emailInput.clear().type(email);
-        this.passwordInput.clear().type(password);
-        this.passwordConfirmationInput.clear().type(passwordConfirmation);
+        this.getInputField('first-name').type(firstName);
+        this.getInputField('last-name').type(lastName);
+        this.getInputField('email').type(email);
+        this.getInputField('password').type(password);
+        this.getInputField('password-confirmation').type(passwordConfirmation);
         this.checkboxInput.check();
         this.submitButton.click();
 }

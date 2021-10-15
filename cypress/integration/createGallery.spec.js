@@ -11,7 +11,6 @@ describe('POM create gallery', ()=> {
     beforeEach('log into the app', () => {
         cy.loginViaBackend("petar@gmail.com", "kisobran.22");
         cy.visit('/create');
-        //custom command doesn't work, why? 
         //cy.createGalleryViaBackend("Sunflowers", "beautiful sunflowers field", "http://static1.everypixel.com/ep-libreshot/0242/0259/3015/99837/2420259301599837355.jpg");
         loginPage.logoutButton.should('be.visible');
         createGalleryPage.createGalleryButton.click();
@@ -21,9 +20,16 @@ describe('POM create gallery', ()=> {
             "https://gallery-api.vivifyideas.com/api/galleries",
             (req)=>{}
         ).as("submitGallery");
-
-
-    }); 
+    });
+    //create gallery via backend
+    it.only('test create gallery via BE', () => {
+        cy.loginViaBackend("petar@gmail.com", "kisobran.22");
+        cy.visit('/create');
+        cy.createGalleryViaBackend("Sunflowers", "beautiful sunflowers field", "http://static1.everypixel.com/ep-libreshot/0242/0259/3015/99837/2420259301599837355.jpg").then((response)=>{
+        let id = response.body.id;
+        cy.writeFile('galleryId.json', id.toString());
+        }); 
+    })
     
     let galleryData = {
         randomTitle:faker.name.title(),
@@ -179,7 +185,7 @@ it("check button Down", ()=>{
     });
 
 //all valid fields, title min 2 characters
-    it("title 2 characters, all valid fields", ()=>{
+    it.only("title 2 characters, all valid fields", ()=>{
         createGalleryPage.createGalleryTwoUrls(minTitle, galleryData.randomDescription, galleryData.randomUrlPng, galleryData.randomUrlJpeg);
         cy.wait('@submitGallery').then((interception)=> {
             expect(interception.response.statusCode).eq(201);

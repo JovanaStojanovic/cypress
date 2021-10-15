@@ -42,6 +42,7 @@ describe("register tests", () => {
     //empty first name field
         it("register with empty first name field", ()=>{
             registerPage.registerNoFirstName(userRegisterData.randomLastName, userRegisterData.randomEmail, userRegisterData.randomPassword, userRegisterData.randomPassword);
+            cy.url().should('contains', 'https://gallery-app.vivifyideas.com/register');
         });
     
     //skipped terms
@@ -51,17 +52,20 @@ describe("register tests", () => {
                 expect(interception.response.statusCode).eq(422);
             })
             registerPage.errorMessage.should('have.text', 'The terms and conditions must be accepted.');
+            cy.url().should('contains', 'https://gallery-app.vivifyideas.com/register');
         });
 
     //wrong email missing first part before @
     it("register with email missing first part before @", ()=>{
         registerPage.register(userRegisterData.randomFirstName, userRegisterData.randomLastName, "@yahoo.com", userRegisterData.randomPassword, userRegisterData.randomPassword);    
+        cy.url().should('contains', 'https://gallery-app.vivifyideas.com/register');
     });
 
     //wrong email @ missing
     it("register with email missing @", ()=>{
         registerPage.register(userRegisterData.randomFirstName, userRegisterData.randomLastName, "js14015141yahoo.com", userRegisterData.randomPassword, userRegisterData.randomPassword); 
-      });
+        cy.url().should('contains', 'https://gallery-app.vivifyideas.com/register');
+    });
     
     //wrong email . missing
     it("register with email missing .", ()=>{
@@ -70,6 +74,7 @@ describe("register tests", () => {
             expect(interception.response.statusCode).eq(422);
         })
         registerPage.errorMessage.should('have.text', 'The email must be a valid email address.');
+        cy.url().should('contains', 'https://gallery-app.vivifyideas.com/register');
     });
 
     //wrong email space
@@ -78,12 +83,14 @@ describe("register tests", () => {
         cy.wait('@registerUser').then((interception)=> {
             expect(interception.response.statusCode).eq(422);
         })
+        cy.url().should('contains', 'https://gallery-app.vivifyideas.com/register');
     });
 
     //wrong email more than one @
     it("register with email that contains more than one @", ()=>{
         registerPage.register(userRegisterData.randomFirstName, userRegisterData.randomLastName, "js@1401514112@yahoo.com", userRegisterData.randomPassword, userRegisterData.randomPassword); 
-       });
+        cy.url().should('contains', 'https://gallery-app.vivifyideas.com/register');
+    });
 
     //wrong password less than 8 characters
     it("register with password that contains less than 8 characters", ()=>{
@@ -92,6 +99,7 @@ describe("register tests", () => {
             expect(interception.response.statusCode).eq(422);
         })
         registerPage.errorMessage.should('have.text', 'The password must be at least 8 characters.');
+        cy.url().should('contains', 'https://gallery-app.vivifyideas.com/register');
     });
 
     //wrong password only 8 letters
@@ -101,6 +109,7 @@ describe("register tests", () => {
             expect(interception.response.statusCode).eq(422);
         })
         registerPage.errorMessage.should('have.text', 'The password format is invalid.');
+        cy.url().should('contains', 'https://gallery-app.vivifyideas.com/register');
     });
 
     //wrong password 6 letters and number
@@ -110,6 +119,7 @@ describe("register tests", () => {
             expect(interception.response.statusCode).eq(422);
         })
         registerPage.errorMessage.should('have.text', 'The password must be at least 8 characters.');
+        cy.url().should('contains', 'https://gallery-app.vivifyideas.com/register');
     });
 
     //wrong password 7 numbers
@@ -119,6 +129,7 @@ describe("register tests", () => {
             expect(interception.response.statusCode).eq(422);
         })
         registerPage.errorMessage.should('have.text', 'The password must be at least 8 characters.');
+        cy.url().should('contains', 'https://gallery-app.vivifyideas.com/register');
     });
 
     //different password and confirmed password
@@ -128,6 +139,7 @@ describe("register tests", () => {
             expect(interception.response.statusCode).eq(422);
         })
         registerPage.errorMessage.should('have.text', 'The password confirmation does not match.');
+        cy.url().should('contains', 'https://gallery-app.vivifyideas.com/register');
     });
 
     //already registered email
@@ -137,6 +149,7 @@ describe("register tests", () => {
             expect(interception.response.statusCode).eq(422);
         })
         registerPage.errorMessage.should('have.text', 'The email has already been taken.');
+        cy.url().should('contains', 'https://gallery-app.vivifyideas.com/register');
     });
 
     //long first name more than 255 characters
@@ -145,6 +158,7 @@ describe("register tests", () => {
         cy.wait('@registerUser').then((interception)=> {
             expect(interception.response.statusCode).eq(500);
         })
+        cy.url().should('contains', 'https://gallery-app.vivifyideas.com/register');
     });
 
     //POSITIVE TEST CASES
