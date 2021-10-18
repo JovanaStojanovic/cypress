@@ -1,6 +1,5 @@
 ///<reference types="Cypress" />
 
-const Locators = require('../fixtures/Locators.json');
 import {loginPage} from './../page_objects/loginPage';
 import {createGalleryPage} from './../page_objects/createGalleryPage';
 import { allGalleries } from '../page_objects/allGalleries';
@@ -11,7 +10,6 @@ describe('POM create gallery', ()=> {
     beforeEach('log into the app', () => {
         cy.loginViaBackend("petar@gmail.com", "kisobran.22");
         cy.visit('/create');
-        //cy.createGalleryViaBackend("Sunflowers", "beautiful sunflowers field", "http://static1.everypixel.com/ep-libreshot/0242/0259/3015/99837/2420259301599837355.jpg");
         loginPage.logoutButton.should('be.visible');
         createGalleryPage.createGalleryButton.click();
 
@@ -21,16 +19,6 @@ describe('POM create gallery', ()=> {
             (req)=>{}
         ).as("submitGallery");
     });
-    //create gallery via backend
-    it.only('test create gallery via BE', () => {
-        cy.loginViaBackend("petar@gmail.com", "kisobran.22");
-        cy.visit('/create');
-        cy.createGalleryViaBackend("Sunflowers", "beautiful sunflowers field", "http://static1.everypixel.com/ep-libreshot/0242/0259/3015/99837/2420259301599837355.jpg").then((response)=>{
-        let id = response.body.id;
-        cy.writeFile('galleryId.json', id.toString());
-        }); 
-    })
-    
     let galleryData = {
         randomTitle:faker.name.title(),
         randomDescription:faker.lorem.sentence(),
@@ -50,33 +38,28 @@ describe('POM create gallery', ()=> {
     let maxTitle=randomstring.generate(255);
     let maxDescription=randomstring.generate(1000);
 
-    //TEST CASES
-//user needs to be logged in in order to be able to see create gallery button
-    it("create gallery option",()=>{
+    it("user able to see create gallery option",()=>{
         cy.url().should('contains', 'https://gallery-app.vivifyideas.com/create');
         createGalleryPage.h1Title.should('have.text', 'Create Gallery');
     });
 
-//all elements should be visible on create gallery page
-    it("all elements visible",()=>{
-        createGalleryPage.titleInput.should('be.visible');
-        createGalleryPage.descriptionInput.should('be.visible');
+    it("all elements visible on create gallery page",()=>{
+        createGalleryPage.getInputField('title').should('be.visible');
+        createGalleryPage.getInputField('description').should('be.visible');
         createGalleryPage.image.eq(0).should('be.visible');
-        createGalleryPage.addImageButton.should('be.visible');
-        createGalleryPage.submitGalleryButton.should('be.visible');
-        createGalleryPage.cancelGalleryButton.should('be.visible');
-        createGalleryPage.button.eq(0).should('be.visible');
-        createGalleryPage.button.eq(1).should('be.visible');
+        createGalleryPage.getImageButton('Add image').should('be.visible');
+        createGalleryPage.buttonArrow.eq(0).should('be.visible');
+        createGalleryPage.buttonArrow.eq(1).should('be.visible');
+        createGalleryPage.getImageButton('Submit').should('be.visible');
+        createGalleryPage.getImageButton('Cancel').should('be.visible');
     });
 
-//click submit button without entering title, description and image
-    it("click submit button, empty gallery",()=>{
-        createGalleryPage.submitGalleryButton.click();
+    it("click submit button without entering title, description and image",()=>{
+        createGalleryPage.getImageButton('Submit').click();
         cy.url().should('contains', 'https://gallery-app.vivifyideas.com/create');
     });
 
-//title less than min of 2 characters
-    it("title contains 1 character", ()=>{
+    it("title contains 1 character, and min for title should be 2 characters", ()=>{
         createGalleryPage.createGallery(shortTitle, galleryData.randomDescription, galleryData.randomUrlJpg);
         cy.wait('@submitGallery').then((interception)=> {
             expect(interception.response.statusCode).eq(422);
@@ -85,8 +68,7 @@ describe('POM create gallery', ()=> {
         createGalleryPage.errorMessage.should('be.visible').and('contain', "The title must be at least 2 characters.");
     });
 
-//title more than max of 255 characters
-    it("title contains 256 characters", ()=>{
+    it("title contains 256 characters, and max for title should be 255 characters", ()=>{
         createGalleryPage.createGallery(longTitle, galleryData.randomDescription, galleryData.randomUrlJpg);
         cy.wait('@submitGallery').then((interception)=> {
             expect(interception.response.statusCode).eq(422);
@@ -95,8 +77,7 @@ describe('POM create gallery', ()=> {
         createGalleryPage.errorMessage.should('be.visible').and('contain', "The title may not be greater than 255 characters.");
     });
 
-//description more than max of 1000 characters
-    it("description contains 1001 characters", ()=>{
+    it("description contains 1001 characters, and max for description should be 1000 characters", ()=>{
         createGalleryPage.createGallery(galleryData.randomTitle, longDescription, galleryData.randomUrlJpg);
         cy.wait('@submitGallery').then((interception)=> {
             expect(interception.response.statusCode).eq(422);
@@ -105,8 +86,7 @@ describe('POM create gallery', ()=> {
         createGalleryPage.errorMessage.should('be.visible').and('contain', "The description may not be greater than 1000 characters.");
     });
 
-//invalid url format .tift
-    it("url format .tift", ()=>{
+    it("invalid url format for image .tift", ()=>{
         createGalleryPage.createGallery(galleryData.randomTitle, galleryData.randomDescription, galleryData.randomUrlTift);
         cy.wait('@submitGallery').then((interception)=> {
             expect(interception.response.statusCode).eq(422);
@@ -115,8 +95,7 @@ describe('POM create gallery', ()=> {
         createGalleryPage.errorMessage.should('be.visible').and('contain', "Wrong format of image");
     });
 
-//invalid url format .gif
-    it("url format .gif", ()=>{
+    it("invalid url format for image .gif", ()=>{
         createGalleryPage.createGallery(galleryData.randomTitle, galleryData.randomDescription, galleryData.randomUrlGif);
         cy.wait('@submitGallery').then((interception)=> {
             expect(interception.response.statusCode).eq(422);
@@ -125,8 +104,7 @@ describe('POM create gallery', ()=> {
         createGalleryPage.errorMessage.should('be.visible').and('contain', "Wrong format of image");
     });
 
-//invalid url format .html
-    it("url format .html", ()=>{
+    it("invalid url format for image .html", ()=>{
         createGalleryPage.createGallery(galleryData.randomTitle, galleryData.randomDescription, galleryData.randomUrlHtml);
         cy.wait('@submitGallery').then((interception)=> {
          expect(interception.response.statusCode).eq(422);
@@ -135,8 +113,7 @@ describe('POM create gallery', ()=> {
         createGalleryPage.errorMessage.should('be.visible').and('contain', "Wrong format of image");
     });
 
-//invalid url format .js
-    it("url format .js", ()=>{
+    it("invalid url format for image .js", ()=>{
         createGalleryPage.createGallery(galleryData.randomTitle, galleryData.randomDescription, galleryData.randomUrlJs);
         cy.wait('@submitGallery').then((interception)=> {
             expect(interception.response.statusCode).eq(422);
@@ -145,8 +122,7 @@ describe('POM create gallery', ()=> {
         createGalleryPage.errorMessage.should('be.visible').and('contain', "Wrong format of image");
      });
 
-//invalid url format .eps
-    it("url format .eps", ()=>{
+    it("invalid url format for image .eps", ()=>{
         createGalleryPage.createGallery(galleryData.randomTitle, galleryData.randomDescription, galleryData.randomUrlEps);
         cy.wait('@submitGallery').then((interception)=> {
             expect(interception.response.statusCode).eq(422);
@@ -155,28 +131,24 @@ describe('POM create gallery', ()=> {
         createGalleryPage.errorMessage.should('be.visible').and('contain', "Wrong format of image");
     });
 
-//title and description good, no url
-    it("empty url field", ()=>{
+    it("title and description valid, but empty url field", ()=>{
         createGalleryPage.createGalleryNoUrl(galleryData.randomTitle, galleryData.randomDescription);
          cy.url().should('contains', 'https://gallery-app.vivifyideas.com/create');
     });
 
-//check button Up
-it("check button Up", ()=>{ 
+it("check arrow button Up", ()=>{ 
     createGalleryPage.checkButton(galleryData.randomTitle, galleryData.randomDescription, galleryData.randomUrlJpg, galleryData.randomUrlPng);
-    createGalleryPage.button.eq(4).click();
+    createGalleryPage.buttonArrow.eq(4).click();
     createGalleryPage.image.eq(0).should('have.value', galleryData.randomUrlPng);
  });
 
-//check button down
-it("check button Down", ()=>{ 
+it("check arrow button Down", ()=>{ 
     createGalleryPage.checkButton(galleryData.randomTitle, galleryData.randomDescription, galleryData.randomUrlJpg, galleryData.randomUrlPng);
-    createGalleryPage.button.eq(2).click();
+    createGalleryPage.buttonArrow.eq(2).click();
     createGalleryPage.image.eq(0).should('have.value', galleryData.randomUrlPng);
  });
 
-//2 urls, 1 valid, 1 invalid format
-    it("1 valid, 1 invalid format", ()=>{
+    it("user enters 2 urls, first valid url format, second invalid url format", ()=>{
         createGalleryPage.createGalleryTwoUrls(galleryData.randomTitle, galleryData.randomDescription, galleryData.randomUrlTift, galleryData.randomUrlJpg);
         cy.wait('@submitGallery').then((interception)=> {
             expect(interception.response.statusCode).eq(422);
@@ -184,8 +156,7 @@ it("check button Down", ()=>{
         createGalleryPage.errorMessage.should('be.visible').and('contain', "Wrong format of image");
     });
 
-//all valid fields, title min 2 characters
-    it.only("title 2 characters, all valid fields", ()=>{
+    it("title 2 characters, all valid fields", ()=>{
         createGalleryPage.createGalleryTwoUrls(minTitle, galleryData.randomDescription, galleryData.randomUrlPng, galleryData.randomUrlJpeg);
         cy.wait('@submitGallery').then((interception)=> {
             expect(interception.response.statusCode).eq(201);
@@ -195,7 +166,6 @@ it("check button Down", ()=>{
         allGalleries.heading.should('have.text', 'All Galleries');
     });
 
-//all valid fields, title max 255 characters
 it("title 255 characters, all valid fields", ()=>{
     createGalleryPage.createGallery(maxTitle, galleryData.randomDescription, galleryData.randomUrlPng);
     cy.wait('@submitGallery').then((interception)=> {
@@ -206,7 +176,6 @@ it("title 255 characters, all valid fields", ()=>{
     allGalleries.heading.should('have.text', 'All Galleries');
 });
 
-//all valid fields, description max 1000 characters
 it("description 1000 characters, all valid fields", ()=>{
     createGalleryPage.createGallery(galleryData.randomTitle, maxDescription, galleryData.randomUrlPng);
     cy.wait('@submitGallery').then((interception)=> {
@@ -217,8 +186,7 @@ it("description 1000 characters, all valid fields", ()=>{
     allGalleries.heading.should('have.text', 'All Galleries');
 });
 
-//description field empty, title and image valid
-it("empty description field, all valid fields", ()=>{
+it("empty optional description field, title and url format valid fields", ()=>{
     createGalleryPage.createGalleryNoDescription(galleryData.randomTitle, galleryData.randomUrlJpg);
     cy.wait('@submitGallery').then((interception)=> {
         expect(interception.response.statusCode).eq(201);
@@ -228,9 +196,15 @@ it("empty description field, all valid fields", ()=>{
     allGalleries.heading.should('have.text', 'All Galleries');
 });
 
-//check cancel button
-it("cancel button", ()=>{
-    createGalleryPage.cancelGalleryButton.click();
+it('create gallery via backend', () => {
+    cy.createGalleryViaBackend("Sunflowers", "beautiful sunflowers field", "http://static1.everypixel.com/ep-libreshot/0242/0259/3015/99837/2420259301599837355.jpg").then((response)=>{
+    let id = response.body.id;
+    cy.writeFile('galleryId.json', id.toString());
+    }); 
+})
+
+it("check if cancel button works", ()=>{
+    createGalleryPage.getImageButton('Cancel').click();
     cy.url().should('contain', 'https://gallery-app.vivifyideas.com/');
     allGalleries.heading.should('have.text', 'All Galleries');
 });  

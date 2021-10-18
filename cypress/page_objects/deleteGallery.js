@@ -14,9 +14,8 @@ export default class DeleteGallery {
     deleteGallery(){
         this.myGalleriesButton.click();
         this.gallery.click();
-        cy.wait(3000);
         this.deleteButton.click();
     }
 }
-
 export const deleteGallery = new DeleteGallery();
+

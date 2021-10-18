@@ -18,12 +18,9 @@ describe('POM delete gallery', ()=> {
             "https://gallery-api.vivifyideas.com/api/galleries/*",
             (req)=>{}
         ).as("deleteGallery");
-
-
     }); 
 
-    //delete created gallery frontend
-    //it("delete gallery", ()=>{
+    //it("delete gallery via frontend (BUG-it's not working because delete gallery button don't exist)", ()=>{
         //cy.wait('@submitGallery').then((interception)=>{
             //expect(interception.response.statusCode).eq(201);
         //})
@@ -32,8 +29,7 @@ describe('POM delete gallery', ()=> {
         //deleteGallery.h1.should('have.text', "All Galleries");
     //});
 
-    //delete created gallery via backend, the gallery must be created first in order for this to work
-    it('delete gallery', ()=>{
+    it('delete gallery via backend (ATTENTION- the gallery must be created first in order for this to work!)', ()=>{
         cy.loginViaBackend("petar@gmail.com", "kisobran.22");
         cy.readFile('./galleryId.json').then((file)=>{
             let galleryId=file;
@@ -43,6 +39,4 @@ describe('POM delete gallery', ()=> {
             expect(interception.response.statusCode).eq(200);
         })
     })
-    
-
 });
