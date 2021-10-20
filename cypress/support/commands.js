@@ -36,7 +36,6 @@ Cypress.Commands.add("loginViaBackend", (email, password) =>{
     })
 })
 
-//Why this custom command doesn't work? 
 Cypress.Commands.add('createGalleryViaBackend', (title, description, imageUrl) => {
     cy.request(
         {
@@ -61,4 +60,21 @@ Cypress.Commands.add('deleteGalleryViaBackend', (id)=>{
             authorization: 'Bearer ' + window.localStorage.getItem('token'),
         },
     });
-})
+});
+
+Cypress.Commands.add('editGalleryViaBackend', (galleryId, title, description, image) => {
+    cy.request({
+        method: 'PUT',
+        url: `https://gallery-api.vivifyideas.com/api/galleries/${galleryId}`,
+        body: {
+            title: title,
+            description: description,
+            images: [image],
+        },
+        headers: {
+            authorization: 'Bearer ' + window.localStorage.getItem('token'),
+        },
+    
+    });
+});
+

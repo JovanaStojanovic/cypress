@@ -5,6 +5,9 @@ export default class CreateGalleryPage {
     get createGalleryButton(){
         return cy.get('a[href="/create"]');
     }
+    get myGalleriesButton(){
+        return cy.get('a[href="/my-galleries"]');
+    }
     getImageButton(name){
         return cy.get('button').contains(name);
     }
@@ -62,6 +65,21 @@ export default class CreateGalleryPage {
         this.image.eq(1).clear().type(secondImage);
         cy.wait(3000);
     }
+
+    createGalleryNew(title, description = false, images=false){
+        this.createGalleryButton.click();
+        this.getInputField('title').clear().type(title);
+        description 
+            ? this.getInputField('description').clear().type(description)
+            : this.getInputField('description').clear();
+        images
+            ? images.map((image, index) => {
+                index && this.getImageButton('Add image').click();
+                this.image.eq(index).clear().type(image);
+            })
+            : this.image.eq(0).clear();
+        this.getImageButton('Submit').click();
+}
 }
 
 export const createGalleryPage = new CreateGalleryPage();

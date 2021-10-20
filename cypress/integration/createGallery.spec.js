@@ -16,8 +16,12 @@ describe('POM create gallery', ()=> {
         cy.intercept(
             "POST",
             "https://gallery-api.vivifyideas.com/api/galleries",
-            (req)=>{}
+            ()=>{}
         ).as("submitGallery");
+        cy.intercept(
+            'GET',
+            'https://gallery-api.vivifyideas.com/api/my-galleries?page=1&term='
+        ).as('myGalleriesPage');
     });
     let galleryData = {
         randomTitle:faker.name.title(),
@@ -157,7 +161,7 @@ it("check arrow button Down", ()=>{
     });
 
     it("title 2 characters, all valid fields", ()=>{
-        createGalleryPage.createGalleryTwoUrls(minTitle, galleryData.randomDescription, galleryData.randomUrlPng, galleryData.randomUrlJpeg);
+        createGalleryPage.createGalleryNew(minTitle, galleryData.randomDescription, [galleryData.randomUrlPng, galleryData.randomUrlJpeg]);
         cy.wait('@submitGallery').then((interception)=> {
             expect(interception.response.statusCode).eq(201);
         })
@@ -198,9 +202,17 @@ it("empty optional description field, title and url format valid fields", ()=>{
 
 it('create gallery via backend', () => {
     cy.createGalleryViaBackend("Sunflowers", "beautiful sunflowers field", "http://static1.everypixel.com/ep-libreshot/0242/0259/3015/99837/2420259301599837355.jpg").then((response)=>{
-    let id = response.body.id;
-    cy.writeFile('galleryId.json', id.toString());
+    let galleryId = response.body.id;
+    cy.writeFile('cypress/fixtures/testId.json', galleryId.toString());
     }); 
+    createGalleryPage.myGalleriesButton.click();
+    cy.wait('@myGalleriesPage').then((interception)=>{
+        cy.readFile('cypress/fixtures/testId.json').then((file)=>{
+            let id=file;
+            expect(interception.response.body.galleries[0].id).eq(id);
+        });
+    })
+    
 })
 
 it("check if cancel button works", ()=>{

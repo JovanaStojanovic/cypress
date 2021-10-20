@@ -9,16 +9,13 @@ describe('POM delete gallery', ()=> {
     beforeEach('log into the app and create a gallery', () => {
         cy.loginViaBackend("petar@gmail.com", "kisobran.22");
         cy.visit('/create');
-        createGalleryPage.createGallery("Sunflowers", "beautiful sunflowers fields", "http://static1.everypixel.com/ep-libreshot/0242/0259/3015/99837/2420259301599837355.jpg");
         loginPage.logoutButton.should('be.visible');
-
-
         cy.intercept(
-            "DELETE",
-            "https://gallery-api.vivifyideas.com/api/galleries/*",
-            (req)=>{}
-        ).as("deleteGallery");
-    }); 
+            'GET',
+            'https://gallery-api.vivifyideas.com/api/my-galleries?page=1&term='
+        ).as('myGalleriesPage');
+    });
+    
 
     //it("delete gallery via frontend (BUG-it's not working because delete gallery button don't exist)", ()=>{
         //cy.wait('@submitGallery').then((interception)=>{
@@ -29,14 +26,45 @@ describe('POM delete gallery', ()=> {
         //deleteGallery.h1.should('have.text', "All Galleries");
     //});
 
-    it('delete gallery via backend (ATTENTION- the gallery must be created first in order for this to work!)', ()=>{
-        cy.loginViaBackend("petar@gmail.com", "kisobran.22");
-        cy.readFile('./galleryId.json').then((file)=>{
-            let galleryId=file;
-            cy.deleteGalleryViaBackend(galleryId);
+    //it('create gallery via backend', () => {
+        //cy.createGalleryViaBackend("Sunflowers", "beautiful sunflowers field", "http://static1.everypixel.com/ep-libreshot/0242/0259/3015/99837/2420259301599837355.jpg").then((response)=>{
+        //let galleryId = response.body.id;
+        //cy.writeFile('cypress/fixtures/testId.json', galleryId.toString());
+        //}); 
+        //createGalleryPage.myGalleriesButton.click();
+        //cy.wait('@myGalleriesPage').then((interception)=>{
+           // cy.readFile('cypress/fixtures/testId.json').then((file)=>{
+              //  let id=file;
+              //  expect(interception.response.body.galleries[0].id).eq(id);
+           // });
+      //  })
+   // });
+   it('create gallery via backend', () => {
+    cy.createGalleryViaBackend("Sunflowers", "beautiful sunflowers field", "http://static1.everypixel.com/ep-libreshot/0242/0259/3015/99837/2420259301599837355.jpg").then((response)=>{
+    let galleryId = response.body.id;
+    cy.writeFile('cypress/fixtures/testId.json', galleryId.toString());
+    }); 
+    createGalleryPage.myGalleriesButton.click();
+    cy.wait('@myGalleriesPage').then((interception)=>{
+        cy.readFile('cypress/fixtures/testId.json').then((file)=>{
+            let id=file;
+            expect(interception.response.body.galleries[0].id).eq(id);
         });
-        cy.wait('@deleteGallery').then((interception)=>{
-            expect(interception.response.statusCode).eq(200);
+    })
+    
+})
+
+    it('delete gallery via backend (ATTENTION- the gallery must be created first in order for this to work!)', ()=>{
+            cy.readFile('cypress/fixtures/testId.json').then((file)=>{
+                let id=file;
+                cy.deleteGalleryViaBackend(id);
+            });
+            createGalleryPage.myGalleriesButton.click();
+            cy.wait('@myGalleriesPage').then((interception)=>{
+            cy.readFile('cypress/fixtures/testId.json').then((file)=>{
+            let id=file;
+            expect(interception.response.body.galleries[0].id).to.not.eq(id);
+        });
         })
     })
 });
